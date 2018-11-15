@@ -209,3 +209,9 @@ function getLatticePeriodic(
     # return the suitable function
     return getLatticePeriodic(unitcell, (extent, extent, extent), lattice_type)
 end
+
+
+
+
+ # export the functions
+ export getLatticePeriodic
