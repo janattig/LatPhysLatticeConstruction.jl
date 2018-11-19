@@ -6,7 +6,8 @@ Lattice construction module of [`LatticePhysics.jl`](http://gitsrv.thp.uni-koeln
 
 ## Contents
 
-still TODO ...
+Provides functions to generate (construct) lattices out of unitcells in various ways. Currently implemented:
+1.  Periodic patterns of unitcells 
 
 
 ## Installation (usage only):
