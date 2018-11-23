@@ -35,6 +35,7 @@ include("index_functions.jl")
 
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY PUTTING TOGETHER UNITCELLS
+# (currently: only periodic patterns)
 include("unitcell_patterns_periodic.jl")
 
 

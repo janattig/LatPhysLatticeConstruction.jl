@@ -186,7 +186,21 @@ end
 
 
 
+
+
+
 # short hand notation (only pass N instead of (N1,N2,N3))
+
+# 1d
+function getLatticePeriodic(
+        unitcell        :: U,
+        extent          :: Int64,
+        lattice_type    :: Type{L} = Lattice{S,B,U}
+    ) :: L where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},U<:AbstractUnitcell{S,B},L<:AbstractLattice{S,B,U}}
+
+    # return the suitable function
+    return getLatticePeriodic(unitcell, (extent, ), lattice_type)
+end
 
 # 2d
 function getLatticePeriodic(
