@@ -60,7 +60,8 @@ pkg_env_setup:
 julia_env_pkg_adding:
   script:
     - julia -e "using Pkg; pkg\"add BenchmarkTools\";"
-    - julia -e "using Pkg; Pkg.clone(\"http://gitlab+deploy-token-2:MgoW2PxpGUsJfSs2xgRA@gitsrv.thp.uni-koeln.de/attig/LatPhysBase.jl.git\");"
+    - git clone http://gitlab+deploy-token-2:MgoW2PxpGUsJfSs2xgRA@gitsrv.thp.uni-koeln.de/attig/LatPhysBase.jl.git ~/.julia/dev/LatPhysBase.jl
+    - julia -e "using Pkg; pkg\"dev ~/.julia/dev/LatPhysBase.jl\";"
     - julia -e "using Pkg; pkg\"dev ../LatPhysLatticeConstruction.jl\";"
   stage: pkg_setup
 
