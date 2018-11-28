@@ -1,92 +1,124 @@
-#=
+
 # generate a lattice in 3D by bond distance (open boundary conditions)
 function getLatticeByBondDistance(
+            :: Type{L},
             unitcell        :: U,
             bonddistance    :: Integer,
             origin          :: Integer = 1
-        )
+        ) :: L where {
+            D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},
+            U<:AbstractUnitcell{S,B},
+            DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
+            L<:AbstractLattice{SL,BL,U}
+        }
 
 
-    # load the data from the unit cell
-    uc_basis            = unitcell.basis
-    uc_connections      = unitcell.connections
-    uc_lattice_vectors  = unitcell.lattice_vectors
-
-    # arrays for new positions and connections
-    positions   = []
-    connections = Array{Any, 1}[]
+    # Format of checklist item
+    #   Tuple{S, NTuple, Int64, Int64}
+    # denoting
+    #   Site - UC Indices (i,j,k,...) - Site Index (in UC) - Bonddistance to origin
 
     # checklist for all sites that are checked if added etc
-    checklist   = []
-    # format for sites on checklist: ([pos_x, pos_y, pos_z], [uc_i, uc_j, uc_k], index_in_UC, bd_current)
+    checklist = Tuple{S, NTuple{3,Int64}, Int64, Int64}[]
+    # list for all accepted sites that are checked
+    accepted  = Tuple{S, NTuple{3,Int64}, Int64, Int64}[]
+
+    # List of all accepted bonds
+    bond_list = BL[]
+
 
     # push the origin site to the checklist
     push!(
-        checklist, (uc_basis[origin], [0,0,0], origin, 0)
+        checklist, (site(unitcell,origin), (0,0,0), origin, 0)
     )
 
     # iterate while the checklist is not empty
     while size(checklist,1) > 0
 
         # get the item that was on the checklist for longest
-        item_to_handle = shift!(checklist)
+        item_to_handle = popfirst!(checklist)
 
-        # check if the item is already in the positions list
+
+        # check if the item is already in the accepted list
         found = false
-        for p in positions
-            if item_to_handle[2] == p[2] && item_to_handle[3] == p[3]
-                # if yes, continue
+        for acc in accepted
+            # check if a site with index acc[3] in unitcell acc[2] is already found
+            if item_to_handle[2] == acc[2] && item_to_handle[3] == acc[3]
                 found = true
                 break
             end
         end
+        # if the element is found, continue with the next checklist item
         if found
             continue
         end
 
-        # if not, push it into
-        push!(positions, item_to_handle)
-        # for all connections
-        index_from = size(positions, 1)
 
-        # insert all connections to sites that are already inside the positions list and all other sites into the checklist
-        for c in uc_connections
-            # check if correct connections
-            if c[1] != item_to_handle[3]
+
+        # Item is NOT in the accepted list, push it into the list
+        push!(accepted, item_to_handle)
+        # set the current item index to the length of the list
+        index_from = length(accepted)
+
+        # search through all connections of the unitcell to find the ones relevant persuing
+        for b in bonds(unitcell)
+
+            # check if the bond actually describes a bond emerging from the site
+            if from(b) != item_to_handle[3]
                 continue
             end
-            # search for the other element of the connection
-            i_to = item_to_handle[2][1] + c[4][1]
-            j_to = item_to_handle[2][2] + c[4][2]
-            k_to = item_to_handle[2][3] + c[4][3]
-            a_to = c[2]
+
+            # build up the element that the bond connects to
+
+            # find out in which copy of unitcell the site is located
+            uc_to = (
+                item_to_handle[2][1] + wrap(b)[1],
+                item_to_handle[2][2] + wrap(b)[2],
+                item_to_handle[2][3] + wrap(b)[3]
+            )
+            # find out which site index it is
+            alpha_to = to(b)
+
+
+            # find out if the item already exists within the accepted list
             index_to = -1
-            for (index,item_handled) in enumerate(positions)
-                if item_handled[2] == [i_to, j_to, k_to] && item_handled[3] == a_to
-                    # make a new connection
+            for (index,item_handled) in enumerate(accepted)
+                # check if the item is the particular item
+                if item_handled[2] == uc_to && item_handled[3] == alpha_to
+                    # save the list index
                     index_to = index
                     # break the loop
                     break
                 end
             end
-            # determine whether the element is already inside the list
+            # determine whether the element is already inside the list (index was set to > 0)
             if index_to > 0
-                # element is at index index_to an can be linked
-                connection_new = [index_from; index_to; c[3]; (0, 0, 0)]
+                # create a new bond
+                bond_new = newBond(
+                    BL,
+                    index_from,
+                    index_to,
+                    label(b),
+                    NTuple{0,Int64}()
+                )
                 # check if the connetion is already added
-                if connection_new in connections
+                if bond_new in bond_list
                     continue
                 end
                 # register as connection
-                push!(connections, connection_new)
+                push!(bond_list, bond_new)
             else
-                # element not in list yet, maybe should be added
+                # the respective site is not in list, maybe add it to the checklist?
                 if item_to_handle[4] < bonddistance
+                    # it can be added, create a new site object
+                    site_new = deepcopy(site(unitcell, to(b)))
+                    # set the new position
+                    point!(site_new, (uc_to[1] .* a1(unitcell)[1]) .+ (uc_to[2] .* a2(unitcell)[1]) .+ (uc_to[3] .* a3(unitcell)[1]) .+ point(site_new))
                     # format for sites on checklist: ([pos_x, pos_y, pos_z], [uc_i, uc_j, uc_k], index_in_UC, bd_current)
                     push!(checklist, (
-                        (i_to * uc_lattice_vectors[1]) .+ (j_to * uc_lattice_vectors[2]) .+ (k_to * uc_lattice_vectors[3]) .+ uc_basis[c[2]],
-                        [i_to, j_to, k_to],
-                        c[2],
+                        site_new,
+                        uc_to,
+                        to(b),
                         item_to_handle[4]+1
                     ))
                 end
@@ -94,45 +126,36 @@ function getLatticeByBondDistance(
         end
     end
 
-    # change the format of positions
-    positions_TMP = positions
-
-    # erase positions
-    positions = Array{Float64, 1}[]
-    positions_indices = Int64[]
-
-    # insert the real positions
-    for p in positions_TMP
-        push!(positions, p[1])
-        push!(positions_indices, p[3])
-    end
-
     # insert missing connections (if (i to j) is present, insert (j to i))
-    for c in connections
-        c_proposed = [c[2]; c[1]; c[3]; (0, 0, 0)]
-        if !(c_proposed in connections)
-            push!(connections, c_proposed)
-        else
-            #println("connection already there")
-        end
-    end
+    # TODO
 
-    # save everything to a Lattice object
-    lattice = Lattice(
-            unitcell,
-            Int64[],
-            Array{Float64, 1}[],
-            positions,
-            positions_indices,
-            connections,
-            filename
+    # save everything to a Lattice object and return it
+    return newLattice(
+            L,
+        	Vector{Float64}[],
+        	SL[newSite(SL, point(s[1]), label(s[1])) for s in accepted],
+        	bond_list,
+            unitcell
         )
-    # save the lattice object
-    if save
-        saveLattice(lattice)
-    end
-
-    # return the lattice object
-    return lattice
 end
-=#
+
+
+
+
+# wrapper
+function getLatticeByBondDistance(
+            unitcell        :: U,
+            bonddistance    :: Integer,
+            origin          :: Integer = 1
+        ) :: Lattice{S,Bond{LB,0},U} where {
+            D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},
+            U<:AbstractUnitcell{S,B}
+        }
+
+    # call the general function
+    return getLatticeByBondDistance(Lattice{S,Bond{LB,0},U}, unitcell, bonddistance, origin)
+end
+
+
+# export the function
+export getLatticeByBondDistance
