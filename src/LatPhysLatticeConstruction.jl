@@ -38,7 +38,9 @@ include("index_functions.jl")
 # (currently: only periodic patterns)
 include("unitcell_patterns_periodic.jl")
 
-
+# CONSTRUCTION OF LATTICES FROM UNITCELLS
+# BY SPREADING OUTWARD OVER BONDS
+include("bond_distance_based.jl")
 
 # module end
 end
