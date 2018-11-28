@@ -195,15 +195,29 @@ end
 
 # short hand notation (only pass N instead of (N1,N2,N3))
 
-# 1d
+# 1d (General)
 function getLatticePeriodic(
         :: Type{L},
         unitcell        :: U,
         extent          :: Int64
-    ) :: L where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},U<:AbstractUnitcell{S,B},L<:AbstractLattice{S,B,U}}
+    ) :: L where {
+        D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},
+        U<:AbstractUnitcell{S,B},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,1},
+        L<:AbstractLattice{SL,BL,U}
+    }
 
     # return the suitable function
-    return getLatticePeriodic(unitcell, (extent, ), lattice_type)
+    return getLatticePeriodic(L, unitcell, (extent, ))
+end
+# 1d (Wrapper)
+function getLatticePeriodic(
+        unitcell        :: U,
+        extent          :: Int64
+    ) :: Lattice{S,B,U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},U<:AbstractUnitcell{S,B}}
+
+    # return the suitable function
+    return getLatticePeriodic(Lattice{S,B,U}, unitcell, (extent, ))
 end
 
 # 2d
@@ -211,10 +225,24 @@ function getLatticePeriodic(
         :: Type{L},
         unitcell        :: U,
         extent          :: Int64
-    ) :: L where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},U<:AbstractUnitcell{S,B},L<:AbstractLattice{S,B,U}}
+    ) :: L where {
+        D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},
+        U<:AbstractUnitcell{S,B},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,2},
+        L<:AbstractLattice{SL,BL,U}
+    }
 
     # return the suitable function
-    return getLatticePeriodic(unitcell, (extent, extent), lattice_type)
+    return getLatticePeriodic(L, unitcell, (extent, extent))
+end
+# 2d (Wrapper)
+function getLatticePeriodic(
+        unitcell        :: U,
+        extent          :: Int64
+    ) :: Lattice{S,B,U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},U<:AbstractUnitcell{S,B}}
+
+    # return the suitable function
+    return getLatticePeriodic(Lattice{S,B,U}, unitcell, (extent, extent))
 end
 
 # 3d
@@ -222,10 +250,24 @@ function getLatticePeriodic(
         :: Type{L},
         unitcell        :: U,
         extent          :: Int64
-    ) :: L where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},U<:AbstractUnitcell{S,B},L<:AbstractLattice{S,B,U}}
+    ) :: L where {
+        D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},
+        U<:AbstractUnitcell{S,B},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,3},
+        L<:AbstractLattice{SL,BL,U}
+    }
 
     # return the suitable function
-    return getLatticePeriodic(unitcell, (extent, extent, extent), lattice_type)
+    return getLatticePeriodic(L, unitcell, (extent, extent, extent))
+end
+# 3d (Wrapper)
+function getLatticePeriodic(
+        unitcell        :: U,
+        extent          :: Int64
+    ) :: Lattice{S,B,U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},U<:AbstractUnitcell{S,B}}
+
+    # return the suitable function
+    return getLatticePeriodic(Lattice{S,B,U}, unitcell, (extent, extent, extent))
 end
 
  # export the functions
