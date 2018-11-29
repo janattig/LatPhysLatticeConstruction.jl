@@ -1,3 +1,22 @@
+# FALLBACK function
+function getLatticeByBondDistance(
+            :: Type{L},
+            unitcell        :: U,
+            bonddistance    :: Integer,
+            origin          :: Integer = 1
+        ) :: L where {
+            D,N,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,N},
+            U<:AbstractUnitcell{S,B},
+            DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
+            L<:AbstractLattice{SL,BL,U}
+        }
+
+    # throw an error as this is not implemented yet
+    error("Either function 'getLatticeByBondDistance' is not yet implemented for unitcells of type " * string(U) * ", i.e. N=" *
+        string(N) * " / D=" * string(D) * " or you passed the wrong lattice type L = " * string(L))
+end
+
+
 
 # generate a lattice in 2D by bond distance (open boundary conditions)
 function getLatticeByBondDistance(
