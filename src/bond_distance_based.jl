@@ -29,7 +29,7 @@ function getLatticeByBondDistance(
 
     # push the origin site to the checklist
     push!(
-        checklist, (site(unitcell,origin), (0,0,0), origin, 0)
+        checklist, (deepcopy(site(unitcell,origin)), (0,0,0), origin, 0)
     )
 
     # iterate while the checklist is not empty
@@ -93,27 +93,35 @@ function getLatticeByBondDistance(
             end
             # determine whether the element is already inside the list (index was set to > 0)
             if index_to > 0
-                # create a new bond
-                bond_new = newBond(
+                # create a new bonds
+                bond_new_1 = newBond(
                     BL,
                     index_from,
                     index_to,
                     label(b),
                     NTuple{0,Int64}()
                 )
-                # check if the connetion is already added
-                if bond_new in bond_list
-                    continue
+                bond_new_2 = newBond(
+                    BL,
+                    index_to,
+                    index_from,
+                    label(b),
+                    NTuple{0,Int64}()
+                )
+                # check if the bonds are already added
+                if !(bond_new_1 in bond_list)
+                    push!(bond_list, bond_new_1)
                 end
-                # register as connection
-                push!(bond_list, bond_new)
+                if !(bond_new_2 in bond_list)
+                    push!(bond_list, bond_new_2)
+                end
             else
                 # the respective site is not in list, maybe add it to the checklist?
                 if item_to_handle[4] < bonddistance
                     # it can be added, create a new site object
                     site_new = deepcopy(site(unitcell, to(b)))
                     # set the new position
-                    point!(site_new, (uc_to[1] .* a1(unitcell)[1]) .+ (uc_to[2] .* a2(unitcell)[1]) .+ (uc_to[3] .* a3(unitcell)[1]) .+ point(site_new))
+                    point!(site_new, (uc_to[1] .* a1(unitcell)) .+ (uc_to[2] .* a2(unitcell)) .+ (uc_to[3] .* a3(unitcell)) .+ point(site_new))
                     # format for sites on checklist: ([pos_x, pos_y, pos_z], [uc_i, uc_j, uc_k], index_in_UC, bd_current)
                     push!(checklist, (
                         site_new,
