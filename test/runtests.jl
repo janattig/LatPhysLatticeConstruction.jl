@@ -67,14 +67,14 @@ using Test
     @testset "Periodic lattices" begin
 
         # 2d given all extents
-        @test getLatticePeriodic(unitcell_2d, (2,2))
+        @test_nowarn getLatticePeriodic(unitcell_2d, (2,2))
         # 2d given only 1 extent
-        @test getLatticePeriodic(unitcell_2d, 3)
+        @test_nowarn getLatticePeriodic(unitcell_2d, 3)
 
         # 3d given all extents
-        @test getLatticePeriodic(unitcell_3d, (2,2,2))
+        @test_nowarn getLatticePeriodic(unitcell_3d, (2,2,2))
         # 3d given only 1 extent
-        @test getLatticePeriodic(unitcell_3d, 3)
+        @test_nowarn getLatticePeriodic(unitcell_3d, 3)
 
     end
 
@@ -86,15 +86,15 @@ using Test
     @testset "Lattices by bond distance" begin
 
         # 2d given only the bond distance
-        @test getLatticeByBondDistance(unitcell_2d, 3)
+        @test_nowarn getLatticeByBondDistance(unitcell_2d, 3)
         # 2d given bond distance and origin
-        @test getLatticeByBondDistance(unitcell_2d, 3, 2)
+        @test_nowarn getLatticeByBondDistance(unitcell_2d, 3, 2)
 
 
         # 3d given only the bond distance
-        @test getLatticeByBondDistance(unitcell_3d, 3)
+        @test_nowarn getLatticeByBondDistance(unitcell_3d, 3)
         # 3d given bond distance and origin
-        @test getLatticeByBondDistance(unitcell_3d, 3, 1)
+        @test_nowarn getLatticeByBondDistance(unitcell_3d, 3, 1)
 
     end
 
