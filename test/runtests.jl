@@ -1,3 +1,4 @@
+using LatPhysBase
 using LatPhysLatticeConstruction
 using Test
 
