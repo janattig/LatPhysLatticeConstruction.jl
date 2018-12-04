@@ -42,5 +42,9 @@ include("unitcell_patterns_periodic.jl")
 # BY SPREADING OUTWARD OVER BONDS
 include("bond_distance_based.jl")
 
+# CONSTRUCTION OF LATTICES FROM UNITCELLS
+# BY SPREADING OUTWARD INSIDE A GIVEN SHAPE
+include("shape_based.jl")
+
 # module end
 end
