@@ -1,3 +1,12 @@
+################################################################################
+#
+#   GENERAL INTERFACE FOR CREATING LATTICES INSIDE SHAPES
+#   (USING ABSOLUTE COORDINATES)
+#
+################################################################################
+
+
+
 # FALLBACK function
 function getLatticeInShape(
             :: Type{L},
@@ -331,3 +340,18 @@ end
 
 # export the function
 export getLatticeInShape
+
+
+
+
+
+################################################################################
+#
+#   SPECIFIC FUNCTIONS FOR CREATING LATTICES INSIDE CERTAIN SHAPES
+#   (USING ABSOLUTE COORDINATES & POSSIBILITY OF RELATIVE COORDINATES)
+#
+#   SUPPORTED SHAPES
+#   - box
+#   - sphere
+#
+################################################################################
