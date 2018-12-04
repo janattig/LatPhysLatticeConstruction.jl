@@ -355,3 +355,108 @@ export getLatticeInShape
 #   - sphere
 #
 ################################################################################
+
+
+
+#-------------
+#   BOX
+#-------------
+
+# MOST GENERIC INTERFACE (FALLBACK)
+function getLatticeInBox(
+            :: Type{L},
+            unitcell   :: U,
+            dimensions :: Vector{<:Real},
+            center     :: Vector{<:Real},
+            origin     :: Integer = 1
+        ) :: L where {
+            D,N,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,N},
+            U<:AbstractUnitcell{S,B},
+            DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
+            L<:AbstractLattice{SL,BL,U}
+        }
+
+    # throw an error as this is not implemented yet
+    error("Either function 'getLatticeInBox' is not yet implemented for unitcells of type " * string(U) * ", i.e. N=" *
+        string(N) * " / D=" * string(D) * " or you passed the wrong lattice type L = " * string(L))
+end
+
+# MOST GENERIC INTERFACE (2D)
+function getLatticeInBox(
+            :: Type{L},
+            unitcell   :: U,
+            dimensions :: Vector{<:Real},
+            center     :: Vector{<:Real},
+            origin     :: Integer = 1
+        ) :: L where {
+            N,LS,LB,S<:AbstractSite{LS,2},B<:AbstractBond{LB,N},
+            U<:AbstractUnitcell{S,B},
+            LLS,LLB,SL<:AbstractSite{LLS,2},BL<:AbstractBond{LLB,0},
+            L<:AbstractLattice{SL,BL,U}
+        }
+
+    # create the shape function
+    shape_function(p) = (center[1] - dimensions[1]/2 <= p[1] <= center[1] + dimensions[1]/2) &&
+                        (center[2] - dimensions[2]/2 <= p[2] <= center[2] + dimensions[2]/2)
+
+    # call the interface with the shape function
+    return getLatticeInShape(L, unitcell, shape_function, origin)
+end
+
+# MOST GENERIC INTERFACE (3D)
+function getLatticeInBox(
+            :: Type{L},
+            unitcell   :: U,
+            dimensions :: Vector{<:Real},
+            center     :: Vector{<:Real},
+            origin     :: Integer = 1
+        ) :: L where {
+            N,LS,LB,S<:AbstractSite{LS,3},B<:AbstractBond{LB,N},
+            U<:AbstractUnitcell{S,B},
+            LLS,LLB,SL<:AbstractSite{LLS,3},BL<:AbstractBond{LLB,0},
+            L<:AbstractLattice{SL,BL,U}
+        }
+
+    # create the shape function
+    shape_function(p) = (center[1] - dimensions[1]/2 <= p[1] <= center[1] + dimensions[1]/2) &&
+                        (center[2] - dimensions[2]/2 <= p[2] <= center[2] + dimensions[2]/2) &&
+                        (center[3] - dimensions[3]/2 <= p[3] <= center[3] + dimensions[3]/2)
+
+    # call the interface with the shape function
+    return getLatticeInShape(L, unitcell, shape_function, origin)
+end
+
+
+# export the function
+export getLatticeInBox
+
+
+# Wrapper function (2D)
+function getLatticeInBox(
+            unitcell   :: U,
+            dimensions :: Vector{<:Real},
+            center     :: Vector{<:Real} = [0.0, 0.0],
+            origin     :: Integer = 1
+        ) :: Lattice{S,Bond{LB,0},U} where {
+            N,LS,LB,S<:AbstractSite{LS,2},B<:AbstractBond{LB,N},
+            U<:AbstractUnitcell{S,B}
+        }
+
+    # call the interface
+    return getLatticeInBox(Lattice{S,Bond{LB,0},U}, unitcell, dimensions, center, origin)
+end
+
+# Wrapper function (3D)
+function getLatticeInBox(
+            unitcell   :: U,
+            dimensions :: Vector{<:Real},
+            center     :: Vector{<:Real} = [0.0, 0.0, 0.0],
+            origin     :: Integer = 1
+        ) :: Lattice{S,Bond{LB,0},U} where {
+            N,LS,LB,S<:AbstractSite{LS,3},B<:AbstractBond{LB,N},
+            U<:AbstractUnitcell{S,B}
+        }
+
+    # call the interface
+    return getLatticeInBox(Lattice{S,Bond{LB,0},U}, unitcell, dimensions, center, origin)
+end
