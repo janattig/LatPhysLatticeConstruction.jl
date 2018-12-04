@@ -36,15 +36,15 @@ include("index_functions.jl")
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY PUTTING TOGETHER UNITCELLS
 # (currently: only periodic patterns)
-include("unitcell_patterns_periodic.jl")
+include("construction_uc_patterns_periodic.jl")
 
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY SPREADING OUTWARD OVER BONDS
-include("bond_distance_based.jl")
+include("construction_by_bond_distance.jl")
 
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY SPREADING OUTWARD INSIDE A GIVEN SHAPE
-include("shape_based.jl")
+include("construction_in_shape.jl")
 
 # module end
 end
