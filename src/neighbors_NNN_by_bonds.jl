@@ -5,7 +5,7 @@ function concanateBonds(
             b1 :: B,
             b2 :: B,
             labelfunction :: Function
-        ) where {L,B<:AbstractBond{L,0}}
+        ) :: B where {L,B<:AbstractBond{L,0}}
 
     # create a new bond
     return newBond(
@@ -21,7 +21,7 @@ function concanateBonds(
             b1 :: B,
             b2 :: B,
             labelfunction :: Function
-        ) where {L,B<:AbstractBond{L,1}}
+        ) :: B where {L,B<:AbstractBond{L,1}}
 
     # create a new bond
     return newBond(
@@ -39,7 +39,7 @@ function concanateBonds(
             b1 :: B,
             b2 :: B,
             labelfunction :: Function
-        ) where {L,B<:AbstractBond{L,2}}
+        ) :: B where {L,B<:AbstractBond{L,2}}
 
     # create a new bond
     return newBond(
@@ -58,7 +58,7 @@ function concanateBonds(
             b1 :: B,
             b2 :: B,
             labelfunction :: Function
-        ) where {L,B<:AbstractBond{L,3}}
+        ) :: B where {L,B<:AbstractBond{L,3}}
 
     # create a new bond
     return newBond(
