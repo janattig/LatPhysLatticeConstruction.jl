@@ -31,7 +31,7 @@ function getLatticePeriodic(
 			# calculate the site index
 			site_index             = index(i,j,a, N_a1,N_a2,N_sites)
 			# calculate the position
-			site_position          = point(site(unitcell,a)) .+ (i.*a1(unitcell)) .+ (j.*a2(unitcell))
+			site_position          = point(site(unitcell,a)) .+ ((i-1).*a1(unitcell)) .+ ((j-1).*a2(unitcell))
 			# set the site in the list
 	        site_list[site_index]  = newSite(SL, site_position, label(site(unitcell,a)))
 		end
@@ -115,7 +115,7 @@ function getLatticePeriodic(
 			# calculate the site index
 			site_index             = index(i,j,k,a, N_a1,N_a2,N_a3,N_sites)
 			# calculate the position
-			site_position          = point(site(unitcell,a)) .+ (i.*a1(unitcell)) .+ (j.*a2(unitcell)) .+ (k.*a3(unitcell))
+			site_position          = point(site(unitcell,a)) .+ ((i-1).*a1(unitcell)) .+ ((j-1).*a2(unitcell)) .+ ((k-1).*a3(unitcell))
 			# set the site in the list
 	        site_list[site_index]  = newSite(SL, site_position, label(site(unitcell,a)))
 		end
