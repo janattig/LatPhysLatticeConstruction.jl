@@ -7,6 +7,9 @@ function concanateBonds(
             labelfunction :: Function
         ) :: B where {L,B<:AbstractBond{L,0}}
 
+    # assert that the bonds can indeed by concanated
+    @assert to(b1) == from(b2)
+
     # create a new bond
     return newBond(
         B,
@@ -22,6 +25,9 @@ function concanateBonds(
             b2 :: B,
             labelfunction :: Function
         ) :: B where {L,B<:AbstractBond{L,1}}
+
+    # assert that the bonds can indeed by concanated
+    @assert to(b1) == from(b2)
 
     # create a new bond
     return newBond(
@@ -41,6 +47,9 @@ function concanateBonds(
             labelfunction :: Function
         ) :: B where {L,B<:AbstractBond{L,2}}
 
+    # assert that the bonds can indeed by concanated
+    @assert to(b1) == from(b2)
+
     # create a new bond
     return newBond(
         B,
@@ -59,6 +68,9 @@ function concanateBonds(
             b2 :: B,
             labelfunction :: Function
         ) :: B where {L,B<:AbstractBond{L,3}}
+
+    # assert that the bonds can indeed by concanated
+    @assert to(b1) == from(b2)
 
     # create a new bond
     return newBond(
@@ -81,16 +93,22 @@ function getBondsNNNByBondDistance(
             labelfunction :: Function = (b1,b2) -> getDefaultLabel(L,"NNN")
         ) :: Vector{B} where {N,L,S,B<:AbstractBond{L,N},U<:AbstractUnitcell{S,B}}
 
-    # obtain the organized bond list
-    bonds_organized = organizedBonds(unitcell)
+    # obtain the organized bond lists
+    bonds_organized_from = organizedBondsFrom(unitcell)
+    bonds_organized_to   = organizedBondsTo(unitcell)
 
-    # return the new bonds
-    return B[
+    # create all possible bonds by concanation of nearest neighbors
+    bonds_NNN = B[
         concanateBonds(b1, b2, labelfunction)
         for i in 1:numSites(unitcell)
-        for b1 in bonds_organized[i]
-        for b2 in bonds_organized[i] if b1!=b2
+        for b1 in bonds_organized_to[i]
+        for b2 in bonds_organized_from[i]
     ]
+    # filter out the ones that connect to the same site
+    filter!(b -> !(!isPeriodic(b) && from(b)==to(b)), bonds_NNN)
+
+    # return the remaining bonds
+    return bonds_NNN
 end
 
 # export the function
