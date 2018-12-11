@@ -33,6 +33,9 @@ using LatPhysBase
 # FUNCTIONS TO DEFINE INDICES IN ARRAYS
 include("index_functions.jl")
 
+# HELPER FUNCTIONS
+include("helper_functions.jl")
+
 
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY PUTTING TOGETHER UNITCELLS
