@@ -102,3 +102,6 @@ function concanateBonds(
         )
     )
 end
+
+# export the concanation function
+export concanateBonds
