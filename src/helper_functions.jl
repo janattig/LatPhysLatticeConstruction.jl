@@ -30,7 +30,7 @@ function concanateBonds(
     # create a new bond
     return newBond(
         B,
-        to(b1) :: Int64,
+        from(b1) :: Int64,
         to(b2) :: Int64,
         labelfunction(b1,b2) :: L,
         NTuple{0,Int64}()
@@ -49,11 +49,11 @@ function concanateBonds(
     # create a new bond
     return newBond(
         B,
-        to(b1) :: Int64,
+        from(b1) :: Int64,
         to(b2) :: Int64,
         labelfunction(b1,b2) :: L,
         (
-            -wrap(b1)[1] + wrap(b2)[1],
+            wrap(b1)[1] + wrap(b2)[1],
         )
     )
 end
@@ -70,12 +70,12 @@ function concanateBonds(
     # create a new bond
     return newBond(
         B,
-        to(b1) :: Int64,
+        from(b1) :: Int64,
         to(b2) :: Int64,
         labelfunction(b1,b2) :: L,
         (
-            -wrap(b1)[1] + wrap(b2)[1],
-            -wrap(b1)[2] + wrap(b2)[2]
+            wrap(b1)[1] + wrap(b2)[1],
+            wrap(b1)[2] + wrap(b2)[2]
         )
     )
 end
@@ -92,13 +92,13 @@ function concanateBonds(
     # create a new bond
     return newBond(
         B,
-        to(b1) :: Int64,
+        from(b1) :: Int64,
         to(b2) :: Int64,
         labelfunction(b1,b2) :: L,
         (
-            -wrap(b1)[1] + wrap(b2)[1],
-            -wrap(b1)[2] + wrap(b2)[2],
-            -wrap(b1)[3] + wrap(b2)[3]
+            wrap(b1)[1] + wrap(b2)[1],
+            wrap(b1)[2] + wrap(b2)[2],
+            wrap(b1)[3] + wrap(b2)[3]
         )
     )
 end
