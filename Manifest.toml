@@ -1,0 +1,14 @@
+[[LatPhysBase]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "2af1faa0ce74d66096a2421832db3cc179a22996"
+repo-rev = "master"
+repo-url = "https://github.com/janattig/LatPhysBase.jl"
+uuid = "eec5c15a-e8bd-11e8-0d23-6799ca40c963"
+version = "0.1.0"
+
+[[Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+
+[[LinearAlgebra]]
+deps = ["Libdl"]
+uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
