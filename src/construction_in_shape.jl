@@ -334,7 +334,7 @@ function getLatticeInShape(
         }
 
     # call the general function
-    return getLatticeByBondDistance(Lattice{S,Bond{LB,0},U}, unitcell, shape, origin)
+    return getLatticeInShape(Lattice{S,Bond{LB,0},U}, unitcell, shape, origin)
 end
 
 
