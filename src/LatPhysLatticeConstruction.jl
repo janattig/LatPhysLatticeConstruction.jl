@@ -39,8 +39,9 @@ include("helper_functions.jl")
 
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY PUTTING TOGETHER UNITCELLS
-# (currently: only periodic patterns)
+# (currently: only periodic and open patterns)
 include("construction_uc_patterns_periodic.jl")
+include("construction_uc_patterns_open.jl")
 
 # CONSTRUCTION OF LATTICES FROM UNITCELLS
 # BY SPREADING OUTWARD OVER BONDS

@@ -3,15 +3,15 @@
 
 
 
-# Construction of periodic lattice (in 2D)
-function getLatticePeriodic(
+# Construction of open lattice (in 2D)
+function getLatticeOpen(
         :: Type{L},
         unitcell        :: U,
         extent          :: NTuple{2,Int64}
     ) :: L where {
         D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},
         U<:AbstractUnitcell{S,B},
-        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,2},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
         L<:AbstractLattice{SL,BL,U}
     }
 
@@ -39,7 +39,8 @@ function getLatticePeriodic(
     end
 
     # GENERATE NEW CONNECTIONS
-	bond_list  = Array{BL,1}(undef, N_a1*N_a2*N_bonds)
+	bond_list      = Array{BL,1}(undef, N_a1*N_a2*N_bonds)
+    bond_list_keep = Array{Bool,1}(undef, N_a1*N_a2*N_bonds)
 
 	# iterate over all unit cells
 	for i in 1:N_a1
@@ -47,7 +48,7 @@ function getLatticePeriodic(
 		# add all connections for unitcell (i,j)
 		for b in 1:N_bonds
 			# get the respective bond
-			current_bond = bond(unitcell,b) :: BL
+			current_bond = bond(unitcell,b) :: B
 			# calculate the site index from where the connection goes
 			index_from = index(i,j,from(current_bond), N_a1,N_a2,N_sites)
 			# calculate the aimed unitcell
@@ -60,24 +61,22 @@ function getLatticePeriodic(
 			# get the site index to where the connection goes
 			index_to = index(i_to, j_to, to(current_bond), N_a1,N_a2,N_sites)
             # generate a new connection and set it in the list
-			bond_list[index(i,j,b, N_a1,N_a2,N_bonds)] = newBond(BL, index_from, index_to, label(current_bond), (offset_a1, offset_a2))
+			bond_list[index(i,j,b, N_a1,N_a2,N_bonds)] = newBond(BL, index_from, index_to, label(current_bond), NTuple{0,Int64}())
+            # check if the bond is allowed
+            bond_list_keep[index(i,j,b, N_a1,N_a2,N_bonds)] = ((offset_a1 == 0) && (offset_a2 == 0))
 		end
 	end
 	end
 
-    # generate new lattice vectors, now spanning the WHOLE lattice
-    lattice_vectors = Vector{Float64}[
-			# multiply by extent of lattice
-			a1(unitcell) .* N_a1,
-			a2(unitcell) .* N_a2
-		]
+    # generate new lattice vectors, now empty list since open boundaries and no periodicity
+    lattice_vectors = Vector{Float64}[]
 
     # save everything to a Lattice object
     lattice = newLattice(
             L,
         	lattice_vectors,
         	site_list,
-        	bond_list,
+        	bond_list[bond_list_keep],
             unitcell
         )
 
@@ -85,15 +84,15 @@ function getLatticePeriodic(
     return lattice
 end
 
-# Construction of periodic lattice (in 3D)
-function getLatticePeriodic(
+# Construction of open lattice (in 3D)
+function getLatticeOpen(
         :: Type{L},
         unitcell        :: U,
         extent          :: NTuple{3,Int64}
     ) :: L where {
         D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},
         U<:AbstractUnitcell{S,B},
-        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,3},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
         L<:AbstractLattice{SL,BL,U}
     }
 
@@ -124,7 +123,8 @@ function getLatticePeriodic(
     end
 
     # GENERATE NEW CONNECTIONS
-	bond_list  = Array{BL,1}(undef, N_a1*N_a2*N_a3*N_bonds)
+	bond_list      = Array{BL,1}(undef, N_a1*N_a2*N_a3*N_bonds)
+    bond_list_keep = Array{Bool,1}(undef, N_a1*N_a2*N_a3*N_bonds)
 
 	# iterate over all unit cells
 	for i in 1:N_a1
@@ -133,7 +133,7 @@ function getLatticePeriodic(
 		# add all connections for unitcell (i,j)
 		for b in 1:N_bonds
 			# get the respective bond
-			current_bond = bond(unitcell, b) :: BL
+			current_bond = bond(unitcell, b) :: B
 			# calculate the site index from where the connection goes
 			index_from = index(i,j,k, from(current_bond), N_a1,N_a2,N_a3,N_sites)
 			# calculate the aimed unitcell
@@ -150,25 +150,22 @@ function getLatticePeriodic(
 			index_to = index(i_to,j_to,k_to, to(current_bond), N_a1,N_a2,N_a3,N_sites)
             # generate a new connection and set it in the list
 			bond_list[index(i,j,k,b, N_a1,N_a2,N_a3,N_bonds)] = newBond(BL, index_from, index_to, label(current_bond), (offset_a1, offset_a2, offset_a3))
+            # check if one wants to keep the current bond
+            bond_list_keep[index(i,j,k,b, N_a1,N_a2,N_a3,N_bonds)] = ((offset_a1 == 0) && (offset_a2 == 0) && (offset_a3 == 0))
 		end
 	end
 	end
 	end
 
-    # generate new lattice vectors, now spanning the WHOLE lattice
-    lattice_vectors = Vector{Float64}[
-			# multiply by extent of lattice
-			a1(unitcell) .* N_a1,
-			a2(unitcell) .* N_a2,
-			a3(unitcell) .* N_a3
-		]
+    # generate new lattice vectors, now empty list since open boundaries and no periodicity
+    lattice_vectors = Vector{Float64}[]
 
     # save everything to a Lattice object
     lattice = newLattice(
             L,
         	lattice_vectors,
         	site_list,
-        	bond_list,
+        	bond_list[bond_list_keep],
             unitcell
         )
 
@@ -178,16 +175,16 @@ end
 
 
 # Construction wrapper for default type
-function getLatticePeriodic(
+function getLatticeOpen(
         unitcell        :: U,
         extent          :: NTuple{N,Int64}
-    ) :: Lattice{S,B,U} where {
+    ) :: Lattice{S,Bond{LB,0},U} where {
         N,D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,N},
         U<:AbstractUnitcell{S,B}
     }
 
     # return the general function
-    return getLatticePeriodic(Lattice{S,B,U}, unitcell, extent)
+    return getLatticeOpen(Lattice{S,Bond{LB,0},U}, unitcell, extent)
 end
 
 
@@ -196,64 +193,64 @@ end
 # short hand notation (only pass N instead of (N1,N2,N3))
 
 # 1d (General)
-function getLatticePeriodic(
+function getLatticeOpen(
         :: Type{L},
         unitcell        :: U,
         extent          :: Int64
     ) :: L where {
         D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},
         U<:AbstractUnitcell{S,B},
-        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,1},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
         L<:AbstractLattice{SL,BL,U}
     }
 
     # return the suitable function
-    return getLatticePeriodic(L, unitcell, (extent, ))
+    return getLatticeOpen(L, unitcell, (extent, ))
 end
 # 1d (Wrapper)
-function getLatticePeriodic(
+function getLatticeOpen(
         unitcell        :: U,
         extent          :: Int64
-    ) :: Lattice{S,B,U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},U<:AbstractUnitcell{S,B}}
+    ) :: Lattice{S,Bond{LB,0},U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,1},U<:AbstractUnitcell{S,B}}
 
     # return the suitable function
-    return getLatticePeriodic(Lattice{S,B,U}, unitcell, (extent, ))
+    return getLatticeOpen(Lattice{S,Bond{LB,0},U}, unitcell, (extent, ))
 end
 
 # 2d
-function getLatticePeriodic(
+function getLatticeOpen(
         :: Type{L},
         unitcell        :: U,
         extent          :: Int64
     ) :: L where {
         D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},
         U<:AbstractUnitcell{S,B},
-        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,2},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
         L<:AbstractLattice{SL,BL,U}
     }
 
     # return the suitable function
-    return getLatticePeriodic(L, unitcell, (extent, extent))
+    return getLatticeOpen(L, unitcell, (extent, extent))
 end
 # 2d (Wrapper)
-function getLatticePeriodic(
+function getLatticeOpen(
         unitcell        :: U,
         extent          :: Int64
-    ) :: Lattice{S,B,U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},U<:AbstractUnitcell{S,B}}
+    ) :: Lattice{S,Bond{LB,0},U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,2},U<:AbstractUnitcell{S,B}}
 
     # return the suitable function
-    return getLatticePeriodic(Lattice{S,B,U}, unitcell, (extent, extent))
+    return getLatticeOpen(Lattice{S,Bond{LB,0},U}, unitcell, (extent, extent))
 end
 
 # 3d
-function getLatticePeriodic(
+function getLatticeOpen(
         :: Type{L},
         unitcell        :: U,
         extent          :: Int64
     ) :: L where {
         D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},
         U<:AbstractUnitcell{S,B},
-        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,3},
+        DL,LLS,LLB,SL<:AbstractSite{LLS,DL},BL<:AbstractBond{LLB,0},
         L<:AbstractLattice{SL,BL,U}
     }
 
@@ -261,14 +258,14 @@ function getLatticePeriodic(
     return getLatticePeriodic(L, unitcell, (extent, extent, extent))
 end
 # 3d (Wrapper)
-function getLatticePeriodic(
+function getLatticeOpen(
         unitcell        :: U,
         extent          :: Int64
-    ) :: Lattice{S,B,U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},U<:AbstractUnitcell{S,B}}
+    ) :: Lattice{S,Bond{LB,0},U} where {D,LS,LB,S<:AbstractSite{LS,D},B<:AbstractBond{LB,3},U<:AbstractUnitcell{S,B}}
 
     # return the suitable function
-    return getLatticePeriodic(Lattice{S,B,U}, unitcell, (extent, extent, extent))
+    return getLatticeOpen(Lattice{S,Bond{LB,0},U}, unitcell, (extent, extent, extent))
 end
 
 # export the functions
-export getLatticePeriodic
+export getLatticeOpen
