@@ -149,7 +149,7 @@ function getLatticeOpen(
 			# get the site index to where the connection goes
 			index_to = index(i_to,j_to,k_to, to(current_bond), N_a1,N_a2,N_a3,N_sites)
             # generate a new connection and set it in the list
-			bond_list[index(i,j,k,b, N_a1,N_a2,N_a3,N_bonds)] = newBond(BL, index_from, index_to, label(current_bond), (offset_a1, offset_a2, offset_a3))
+			bond_list[index(i,j,k,b, N_a1,N_a2,N_a3,N_bonds)] = newBond(BL, index_from, index_to, label(current_bond), NTuple{0,Int64}())
             # check if one wants to keep the current bond
             bond_list_keep[index(i,j,k,b, N_a1,N_a2,N_a3,N_bonds)] = ((offset_a1 == 0) && (offset_a2 == 0) && (offset_a3 == 0))
 		end
